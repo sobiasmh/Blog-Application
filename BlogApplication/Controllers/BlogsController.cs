@@ -1,4 +1,5 @@
 ﻿using BlogApplication.Data;
+using BlogApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,23 @@ namespace BlogApplication.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBlogPost(string Title, string Content, string Category)
+        [HttpPost]
+        public IActionResult AddBlogPost(BlogPost blogPost)
+
         {
-          
-            return RedirectToAction("Index"); 
+            if (!ModelState.IsValid)
+            {
+                _context.BlogPosts.Add(blogPost);
+                _context.SaveChanges();
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewData["Categories"] = _context.Categories.ToList();
+            return View("CreateBlog", blogPost);
         }
+
+
+
 
     }
 }

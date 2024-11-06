@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<BlogApplication.Models.BlogPost>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -7,4 +9,34 @@
     <button class="btn" style="background-color: #133E87; color: white;" onclick="window.location.href='@Url.Action("CreateBlog", "Blogs")'">
         Add Blog
     </button>
+</div>
+
+<div class="container mt-5">
+    <h2>Blog Feed</h2>
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <p>No blogs available.</p>
+        }
+        else
+        {
+            @foreach (var blog in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">@blog.Title</h3>
+                            <p class="card-text">@blog.Content</p>
+                            <p class="card-subtitle text-muted">
+                                Category: @blog.Category?.Name
+                            </p>
+                            <p class="card-footer text-muted">
+                                Posted on: @blog.CreatedDate.ToString("MMMM dd, yyyy")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
