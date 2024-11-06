@@ -2,7 +2,9 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="text-center d-flex justify-content-between align-items-center p-3">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <button class="btn" style="background-color: #133E87; color: white;" onclick="window.location.href='@Url.Action("CreateBlog", "Blogs")'">
+        Add Blog
+    </button>
 </div>

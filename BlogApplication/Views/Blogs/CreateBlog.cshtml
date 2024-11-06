@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Create Blog Post";
+}
+
+<div class="container mt-5">
+    <h2>Create a New Blog Post</h2>
+    <form method="post" action="/Home/AddBlogPost">
+        <!-- Blog Title -->
+        <div class="form-group">
+            <label for="blogTitle">Title</label>
+            <input type="text" class="form-control" id="blogTitle" name="Title" placeholder="Enter blog title" required>
+        </div>
+
+        <!-- Blog Content with TinyMCE Rich Text Editor -->
+        <div class="form-group mt-3">
+            <label for="blogContent">Content</label>
+            <textarea id="blogContent" name="Content" rows="10" class="form-control" required></textarea>
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="form-group mt-3">
+            <label for="category">Category</label>
+            <select id="category" name="Category" class="form-control" required>
+                <option value="">Select Category</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.Name">@category.Name</option>
+                }
+            </select>
+        </div>
+
+        <!-- Add Blog Post Button -->
+        <button type="submit" class="btn" style="background-color: #133E87; color: white; margin-top: 20px;">
+            Add Blog
+        </button>
+    </form>
+</div>
+
+<!-- TinyMCE Script for Rich Text Editor -->
+<script src="https://cdn.tiny.cloud/1/wg90yx6u1ji5o9zsbx42vp1zvemyyroa6x1c34k4iap6u1yj/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#blogContent',
+        plugins: 'advlist autolink lists link charmap print preview anchor textcolor',
+        toolbar: 'bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor',
+        menubar: false,
+        height: 400
+        });
+</script>
