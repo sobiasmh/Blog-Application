@@ -1,0 +1,12 @@
+﻿@model BlogApplication.Models.BlogPost
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-5">
+    <h2>@Model.Title</h2>
+    <p class="text-muted">Category: @Model.Category.Name | Created on: @Model.CreatedDate.ToString("MMM dd, yyyy")</p>
+    <hr />
+    <p>@Html.Raw(Model.Content)</p>
+</div>

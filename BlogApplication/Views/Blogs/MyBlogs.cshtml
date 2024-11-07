@@ -1,0 +1,29 @@
+﻿@model List<BlogApplication.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "My Blogs";
+}
+
+<div class="container mt-5">
+    <h2>My Blogs</h2>
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <p>You haven't created any blog posts yet.</p>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var blog in Model)
+            {
+                <div class="list-group-item mb-3">
+                    <h4>@blog.Title</h4>
+                    <p class="text-muted">Category: @blog.Category.Name | Created on: @blog.CreatedDate.ToString("MMM dd, yyyy")</p>
+                    <p>@Html.Raw(blog.Content)</p>
+                    <a href="@Url.Action("Details", "Blogs", new { id = blog.Id })" class="btn btn-primary">Read More</a>
+                </div>
+            }
+        </div>
+    }
+</div>
