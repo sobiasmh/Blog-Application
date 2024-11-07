@@ -6,9 +6,13 @@
 
 <div class="text-center d-flex justify-content-between align-items-center p-3">
     <h1 class="display-4">Welcome</h1>
-    <button class="btn" style="background-color: #133E87; color: white;" onclick="window.location.href='@Url.Action("CreateBlog", "Blogs")'">
-        Add Blog
-    </button>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <button class="btn" style="background-color: #133E87; color: white;" onclick="window.location.href='@Url.Action("CreateBlog", "Blogs")'">
+            Add Blog
+        </button>
+    }
+
 </div>
 
 <div class="container mt-5">

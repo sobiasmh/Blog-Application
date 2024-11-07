@@ -9,45 +9,71 @@ namespace BlogApplication.Controllers
 {
     public class BlogsController : Controller
     {
-
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-
 
         public BlogsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
-        public IActionResult CreateBlog()
+
+        public async Task<IActionResult> CreateBlog(int? id)
         {
-            var categories = _context.Categories.ToList();
+            var categories = await _context.Categories.ToListAsync();
             ViewBag.Categories = categories;
-            return View();
+
+            if (id.HasValue)
+            {
+                var blogPost = await _context.BlogPosts
+                                              .FirstOrDefaultAsync(b => b.Id == id.Value);
+
+                if (blogPost == null)
+                {
+                    return NotFound();
+                }
+
+                return View(blogPost);
+            }
+
+            return View(new BlogPost());
         }
 
         [HttpPost]
-        [HttpPost]
-        public async Task<IActionResult> AddBlogPost(BlogPost blogPost)
-
-
+        public async Task<IActionResult> AddOrUpdateBlogPost(BlogPost blogPost)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-
-                    blogPost.Content = Regex.Replace(blogPost.Content, "<.*?>", string.Empty); // Strip HTML tags
-                    blogPost.UserId = user.Id;
-                    _context.BlogPosts.Add(blogPost);
-                    _context.SaveChanges();
-                    return RedirectToAction("Index", "Home");
-                }
+                ViewBag.Categories = await _context.Categories.ToListAsync();
+                return View("CreateBlog", blogPost);
             }
 
-            ViewData["Categories"] = _context.Categories.ToList();
-            return View("CreateBlog", blogPost);
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                blogPost.Content = Regex.Replace(blogPost.Content, "<.*?>", string.Empty); 
+                blogPost.UserId = user.Id;
+
+                if (blogPost.Id == 0) 
+                {
+                    _context.BlogPosts.Add(blogPost);
+                }
+                else
+                {
+                    var existingBlog = await _context.BlogPosts.FindAsync(blogPost.Id);
+                    if (existingBlog == null) return NotFound();
+
+                    existingBlog.Title = blogPost.Title;
+                    existingBlog.Content = blogPost.Content;
+                    existingBlog.CategoryId = blogPost.CategoryId;
+                    existingBlog.CreatedDate = blogPost.CreatedDate;
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("MyBlogs");
+            }
+
+            return RedirectToAction("/Identity/Account/Login"); 
         }
 
         public async Task<IActionResult> MyBlogs()
@@ -60,7 +86,7 @@ namespace BlogApplication.Controllers
 
             var myBlogs = await _context.BlogPosts
                                         .Where(b => b.UserId == user.Id)
-                                        .Include(b => b.Category) 
+                                        .Include(b => b.Category)
                                         .ToListAsync();
 
             return View(myBlogs);
@@ -80,9 +106,27 @@ namespace BlogApplication.Controllers
             return View(blogPost);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Redirect("/Identity/Account/Login");
+            }
 
+            var blogPost = await _context.BlogPosts.FindAsync(id);
 
+            if (blogPost == null || blogPost.UserId != user.Id)
+            {
+                return NotFound();
+            }
 
+            _context.BlogPosts.Remove(blogPost);
+            await _context.SaveChangesAsync();
 
+            return RedirectToAction("MyBlogs");
+        }
     }
 }

@@ -1,19 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Create Blog Post";
+    ViewData["Title"] = ViewData["Title"] ?? (Model != null && Model.Id > 0 ? "Edit Blog Post" : "Create Blog Post");
+    var isEdit = Model != null && Model.Id > 0;
 }
 
 <div class="container mt-5">
-    <h2>Create a New Blog Post</h2>
-    <form asp-action="AddBlogPost" asp-controller="Blogs" method="post">
-        <div class="form-group">
-            <label for="blogTitle" class="mb-2" style="font-weight:700">Title</label>
-            <input type="text" class="form-control" id="blogTitle" name="Title" placeholder="Enter blog title" required>
-        </div>
+    <h2>@ViewData["Title"]</h2>
 
-        <div class="form-group mt-3">
-            <label for="blogContent" class="mb-2" style="font-weight:700">Content</label>
-            <textarea id="blogContent" name="Content" rows="10" class="form-control"></textarea>
-        </div>
+    <form asp-action="AddOrUpdateBlogPost" asp-controller="Blogs" method="post">
+    @if (isEdit)
+    {
+        <input type="hidden" name="Id" value="@Model.Id" />
+    }
+
+    <div class="form-group">
+        <label for="blogTitle" class="mb-2" style="font-weight:700">Title</label>
+        <input type="text" class="form-control" id="blogTitle" name="Title" placeholder="Enter blog title" required value="@Model?.Title">
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="blogContent" class="mb-2" style="font-weight:700">Content</label>
+        <textarea id="blogContent" name="Content" rows="10" class="form-control">@Model?.Content</textarea>
+    </div>
 
         <div class="form-group mt-3">
             <label for="category" class="mb-2" style="font-weight:700">Category</label>
@@ -25,13 +32,22 @@
                 }
             </select>
         </div>
-        <input type="hidden" name="CreatedDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")">
+         
+    
+    <input type="hidden" name="CreatedDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")">
 
-
-        <button type="submit" class="btn" style="background-color: #133E87; color: white; margin-top: 20px;">
-            Add Blog
-        </button>
-    </form>
+    <button type="submit" class="btn" style="background-color: #133E87; color: white; margin-top: 20px;">
+        @if (isEdit)
+        {
+            <span>Update Blog</span>
+        }
+        else
+        {
+            <span>Add Blog</span>
+        }
+    </button>
+</form>
+    
 </div>
 
 <script src="https://cdn.tiny.cloud/1/wg90yx6u1ji5o9zsbx42vp1zvemyyroa6x1c34k4iap6u1yj/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
@@ -42,13 +58,13 @@
         toolbar: 'bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor',
         menubar: false,
         height: 400,
-            setup: function(editor) {
-                editor.on('submit', function(event) {
-                    if (editor.getContent().trim() === '') {
-                        alert('Content is required.');
-                        event.preventDefault();
-                    }
-                });
-            }
-        });
+        setup: function(editor) {
+            editor.on('submit', function(event) {
+                if (editor.getContent().trim() === '') {
+                    alert('Content is required.');
+                    event.preventDefault();
+                }
+            });
+        }
+    });
 </script>

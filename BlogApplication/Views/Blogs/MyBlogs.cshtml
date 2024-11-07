@@ -10,7 +10,16 @@
 
     @if (!Model.Any())
     {
-        <p>You haven't created any blog posts yet.</p>
+        <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+                <p>You haven't created any blog posts yet.</p>
+            </div>
+            <div class="col-auto">
+                <button class="btn" style="background-color: #133E87; color: white;" onclick="window.location.href='@Url.Action("CreateBlog", "Blogs")'">
+                    Add Blog
+                </button>
+            </div>
+        </div>
     }
     else
     {
@@ -18,10 +27,34 @@
             @foreach (var blog in Model)
             {
                 <div class="list-group-item mb-3">
+                    <div class="row justify-content-between align-items-center">
+                    <div class="col-auto">
                     <h4>@blog.Title</h4>
+                    </div>
+                    <div class="col-auto">
+                        <!-- Edit Button -->
+                        <a href="@Url.Action("CreateBlog", "Blogs", new { id = blog.Id })" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </div>
+
+                    </div>
                     <p class="text-muted">Category: @blog.Category.Name | Created on: @blog.CreatedDate.ToString("MMM dd, yyyy")</p>
                     <p>@Html.Raw(blog.Content)</p>
-                    <a href="@Url.Action("Details", "Blogs", new { id = blog.Id })" class="btn btn-primary">Read More</a>
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-auto">
+                            <a href="@Url.Action("Details", "Blogs", new { id = blog.Id })" class="btn btn-primary">Read More</a>
+                        </div>
+                       
+                        <div class="col-auto">
+                            <form asp-action="Delete" asp-controller="Blogs" method="post" onsubmit="return confirm('Are you sure you want to delete this blog?');">
+                                <input type="hidden" name="id" value="@blog.Id" />
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
